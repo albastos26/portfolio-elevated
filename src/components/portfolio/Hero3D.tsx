@@ -1,224 +1,10 @@
-import { Suspense, useRef, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Environment, ContactShadows, Sparkles } from "@react-three/drei";
+import { useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "motion/react";
-import { ArrowUpRight, Star } from "lucide-react";
-import * as THREE from "three";
-
-/* ---------- 3D Scene: Realistic Teddy Bear ---------- */
-
-function TeddyBear({ mouse }: { mouse: { x: number; y: number } }) {
-  const group = useRef<THREE.Group>(null);
-  const head = useRef<THREE.Group>(null);
-  const leftArm = useRef<THREE.Mesh>(null);
-  const rightArm = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (group.current) {
-      group.current.rotation.y = THREE.MathUtils.lerp(
-        group.current.rotation.y,
-        mouse.x * 0.6,
-        0.05
-      );
-      group.current.rotation.x = THREE.MathUtils.lerp(
-        group.current.rotation.x,
-        mouse.y * 0.25,
-        0.05
-      );
-    }
-    if (head.current) {
-      head.current.rotation.z = Math.sin(t * 0.8) * 0.08;
-      head.current.rotation.y = Math.sin(t * 0.5) * 0.15;
-    }
-    // Waving arm
-    if (leftArm.current) {
-      leftArm.current.rotation.z = 0.4 + Math.sin(t * 3) * 0.6;
-    }
-    if (rightArm.current) {
-      rightArm.current.rotation.z = -0.5 + Math.sin(t * 1.2) * 0.1;
-    }
-  });
-
-  // Fur-like material
-  const fur = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#c8956d",
-        roughness: 0.95,
-        sheen: 1,
-        sheenColor: new THREE.Color("#f3d6b0"),
-        sheenRoughness: 0.4,
-        clearcoat: 0.1,
-      }),
-    []
-  );
-  const darkFur = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#8b5e3c",
-        roughness: 0.9,
-        sheen: 0.8,
-        sheenColor: new THREE.Color("#d4a574"),
-      }),
-    []
-  );
-  const snoutMat = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#f0dcc0",
-        roughness: 0.85,
-        sheen: 0.6,
-      }),
-    []
-  );
-  const eyeMat = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#1a1208",
-        roughness: 0.15,
-        clearcoat: 1,
-        clearcoatRoughness: 0.05,
-        metalness: 0.2,
-      }),
-    []
-  );
-  const noseMat = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#1a1208",
-        roughness: 0.25,
-        clearcoat: 0.8,
-      }),
-    []
-  );
-  const bowMat = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#FF8A80",
-        roughness: 0.4,
-        sheen: 1,
-        sheenColor: new THREE.Color("#FFE66D"),
-        clearcoat: 0.5,
-      }),
-    []
-  );
-
-  return (
-    <group ref={group} position={[0, -0.6, 0]} scale={1.15}>
-      {/* Body */}
-      <mesh material={fur} position={[0, 0, 0]} castShadow>
-        <sphereGeometry args={[1, 64, 64]} />
-      </mesh>
-      {/* Belly patch */}
-      <mesh material={snoutMat} position={[0, -0.1, 0.78]} scale={[0.7, 0.85, 0.4]}>
-        <sphereGeometry args={[0.55, 48, 48]} />
-      </mesh>
-
-      {/* Head group */}
-      <group ref={head} position={[0, 1.25, 0.1]}>
-        <mesh material={fur} castShadow>
-          <sphereGeometry args={[0.78, 64, 64]} />
-        </mesh>
-        {/* Ears */}
-        <mesh material={fur} position={[-0.6, 0.55, 0]}>
-          <sphereGeometry args={[0.25, 32, 32]} />
-        </mesh>
-        <mesh material={darkFur} position={[-0.6, 0.55, 0.08]} scale={[0.7, 0.7, 0.3]}>
-          <sphereGeometry args={[0.25, 32, 32]} />
-        </mesh>
-        <mesh material={fur} position={[0.6, 0.55, 0]}>
-          <sphereGeometry args={[0.25, 32, 32]} />
-        </mesh>
-        <mesh material={darkFur} position={[0.6, 0.55, 0.08]} scale={[0.7, 0.7, 0.3]}>
-          <sphereGeometry args={[0.25, 32, 32]} />
-        </mesh>
-        {/* Snout */}
-        <mesh material={snoutMat} position={[0, -0.15, 0.6]} scale={[1, 0.8, 0.7]}>
-          <sphereGeometry args={[0.32, 48, 48]} />
-        </mesh>
-        {/* Nose */}
-        <mesh material={noseMat} position={[0, 0.02, 0.85]}>
-          <sphereGeometry args={[0.08, 32, 32]} />
-        </mesh>
-        {/* Eyes */}
-        <mesh material={eyeMat} position={[-0.26, 0.18, 0.66]}>
-          <sphereGeometry args={[0.07, 32, 32]} />
-        </mesh>
-        <mesh material={eyeMat} position={[0.26, 0.18, 0.66]}>
-          <sphereGeometry args={[0.07, 32, 32]} />
-        </mesh>
-        {/* Eye highlights */}
-        <mesh position={[-0.24, 0.21, 0.72]}>
-          <sphereGeometry args={[0.018, 16, 16]} />
-          <meshBasicMaterial color="#ffffff" />
-        </mesh>
-        <mesh position={[0.28, 0.21, 0.72]}>
-          <sphereGeometry args={[0.018, 16, 16]} />
-          <meshBasicMaterial color="#ffffff" />
-        </mesh>
-      </group>
-
-      {/* Arms */}
-      <mesh ref={leftArm} material={fur} position={[-0.95, 0.35, 0.15]}>
-        <capsuleGeometry args={[0.28, 0.5, 16, 32]} />
-      </mesh>
-      <mesh ref={rightArm} material={fur} position={[0.95, 0.35, 0.15]}>
-        <capsuleGeometry args={[0.28, 0.5, 16, 32]} />
-      </mesh>
-
-      {/* Legs */}
-      <mesh material={fur} position={[-0.55, -1.05, 0.1]} rotation={[0.2, 0, -0.1]}>
-        <capsuleGeometry args={[0.32, 0.5, 16, 32]} />
-      </mesh>
-      <mesh material={fur} position={[0.55, -1.05, 0.1]} rotation={[0.2, 0, 0.1]}>
-        <capsuleGeometry args={[0.32, 0.5, 16, 32]} />
-      </mesh>
-      {/* Foot pads */}
-      <mesh material={snoutMat} position={[-0.55, -1.35, 0.32]} scale={[0.8, 0.4, 0.6]}>
-        <sphereGeometry args={[0.25, 32, 32]} />
-      </mesh>
-      <mesh material={snoutMat} position={[0.55, -1.35, 0.32]} scale={[0.8, 0.4, 0.6]}>
-        <sphereGeometry args={[0.25, 32, 32]} />
-      </mesh>
-
-      {/* Bow tie */}
-      <group position={[0, 0.62, 0.78]} rotation={[0, 0, 0]}>
-        <mesh material={bowMat} position={[-0.18, 0, 0]} rotation={[0, 0, 0.4]}>
-          <coneGeometry args={[0.14, 0.3, 4]} />
-        </mesh>
-        <mesh material={bowMat} position={[0.18, 0, 0]} rotation={[0, 0, -0.4]}>
-          <coneGeometry args={[0.14, 0.3, 4]} />
-        </mesh>
-        <mesh material={bowMat}>
-          <sphereGeometry args={[0.07, 16, 16]} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
-function Scene({ mouse }: { mouse: { x: number; y: number } }) {
-  return (
-    <>
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[5, 6, 5]} intensity={1.4} color="#FFE4B5" castShadow />
-      <pointLight position={[-5, 3, 3]} intensity={1.6} color="#FF8A80" />
-      <pointLight position={[5, -2, 2]} intensity={1} color="#A8D5BA" />
-      <pointLight position={[0, 2, 5]} intensity={0.7} color="#FFE66D" />
-
-      <Float speed={1.6} rotationIntensity={0.15} floatIntensity={0.5}>
-        <TeddyBear mouse={mouse} />
-      </Float>
-
-      <ContactShadows position={[0, -2.3, 0]} opacity={0.35} scale={8} blur={2.6} far={4} />
-      <Sparkles count={80} scale={10} size={2} speed={0.3} color="#FFB4A2" />
-      <Environment preset="sunset" />
-    </>
-  );
-}
-
-/* ---------- UI Layer ---------- */
+import { ArrowUpRight, Star, Play } from "lucide-react";
+import heroBg from "@/assets/photos/hero.jpeg";
+import card1 from "@/assets/photos/tricycles.jpeg";
+import card2 from "@/assets/photos/peinture.jpeg";
+import card3 from "@/assets/photos/balles.jpeg";
 
 const stats = [
   { v: "12+", l: "Années" },
@@ -226,39 +12,57 @@ const stats = [
   { v: "98%", l: "Satisfaction" },
 ];
 
-const marquee = ["Bienveillance", "★", "Créativité", "★", "Éveil", "★", "Sécurité", "★", "Joie", "★", "Découverte", "★"];
+const marquee = [
+  "Bienveillance", "★", "Créativité", "★", "Éveil", "★",
+  "Sécurité", "★", "Joie", "★", "Découverte", "★",
+];
 
 export function Hero3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
-  const sceneY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-40%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1.05, 1.15]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
+  // Mouse parallax
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const smx = useSpring(mx, { stiffness: 60, damping: 20 });
   const smy = useSpring(my, { stiffness: 60, damping: 20 });
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const cardA = useTransform(smx, (v) => v * 0.6);
+  const cardB = useTransform(smx, (v) => -v * 0.4);
+  const cardAY = useTransform(smy, (v) => v * 0.4);
+  const cardBY = useTransform(smy, (v) => -v * 0.3);
 
   const handleMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    mx.set(x * 30);
+    mx.set(x * 40);
     my.set(y * 30);
-    mouseRef.current.x = x;
-    mouseRef.current.y = y;
   };
 
   return (
     <section
       ref={containerRef}
       onMouseMove={handleMove}
-      className="relative min-h-screen w-full overflow-hidden bg-cream"
+      className="relative min-h-screen w-full overflow-hidden bg-ink"
     >
-      {/* Background grain + radial */}
-      <div className="absolute inset-0 bg-gradient-dawn" />
+      {/* Background image with parallax */}
+      <motion.div
+        style={{ y: bgY, scale: bgScale, backgroundImage: `url(${heroBg})` }}
+        className="absolute inset-0 bg-cover bg-center"
+      />
+      {/* Dark editorial gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-ink/80 via-ink/45 to-ink/85" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
+      {/* Color wash */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-petal/25 via-transparent to-sun/20 mix-blend-overlay" />
+      {/* Grain */}
       <div
         className="absolute inset-0 opacity-[0.18] mix-blend-overlay pointer-events-none"
         style={{
@@ -266,62 +70,88 @@ export function Hero3D() {
             "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>\")",
         }}
       />
-      <div className="absolute -top-40 -left-40 w-[40rem] h-[40rem] rounded-full bg-petal/20 blur-[120px] animate-blob" />
-      <div className="absolute -bottom-40 -right-40 w-[40rem] h-[40rem] rounded-full bg-sun/30 blur-[120px] animate-blob" style={{ animationDelay: "4s" }} />
 
-      {/* Editorial frame markers */}
-      <div className="absolute top-28 left-6 md:left-10 z-20 text-[10px] tracking-[0.4em] uppercase text-ink/60 [writing-mode:vertical-rl] rotate-180">
+      {/* Editorial vertical markers */}
+      <div className="absolute top-28 left-6 md:left-10 z-20 text-[10px] tracking-[0.4em] uppercase text-white/60 [writing-mode:vertical-rl] rotate-180 hidden sm:block">
         Est. 2013 — Kigali · RW
       </div>
-      <div className="absolute top-28 right-6 md:right-10 z-20 text-[10px] tracking-[0.4em] uppercase text-ink/60 [writing-mode:vertical-rl]">
+      <div className="absolute top-28 right-6 md:right-10 z-20 text-[10px] tracking-[0.4em] uppercase text-white/60 [writing-mode:vertical-rl] hidden sm:block">
         Chapter 01 / L'Aube
       </div>
 
-      {/* 3D Canvas */}
-      <motion.div style={{ y: sceneY }} className="absolute inset-0 z-0">
-        <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 6.5], fov: 50 }}>
-          <Suspense fallback={null}>
-            <Scene mouse={mouseRef.current} />
-          </Suspense>
-        </Canvas>
-      </motion.div>
-
-      {/* Soft bottom fade */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-cream pointer-events-none z-[1]" />
-
       {/* Hero content */}
-      <motion.div style={{ y: textY, opacity }} className="relative z-10 min-h-screen flex flex-col justify-between pt-28 pb-24 px-6 md:px-12 pointer-events-none">
+      <motion.div
+        style={{ y: textY, opacity }}
+        className="relative z-10 min-h-screen flex flex-col justify-between pt-28 pb-28 px-6 md:px-12"
+      >
         {/* Top eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-ink/70 pointer-events-auto"
+          className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-white/80"
         >
           <span className="flex items-center gap-2">
-            <span className="w-8 h-px bg-ink/40" />
+            <span className="w-8 h-px bg-white/40" />
             Une crèche · pas comme les autres
           </span>
           <span className="hidden md:flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star key={i} className="w-3 h-3 fill-sun text-sun" />
             ))}
-            <span className="ml-2">Noté 4.9</span>
+            <span className="ml-2 text-white/90">Noté 4.9</span>
           </span>
         </motion.div>
 
-        {/* Center — editorial split */}
+        {/* Center — editorial split with floating images */}
         <div className="grid grid-cols-12 gap-4 items-end relative">
+          {/* Floating polaroid cards */}
+          <motion.div
+            style={{ x: cardA, y: cardAY }}
+            initial={{ opacity: 0, scale: 0.85, rotate: -8 }}
+            animate={{ opacity: 1, scale: 1, rotate: -6 }}
+            transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden lg:block absolute right-[6%] top-[2%] w-56 xl:w-64 z-20"
+          >
+            <div className="bg-cream p-3 pb-10 rounded-sm shadow-glow rotate-[-6deg] hover:rotate-0 transition-transform duration-700">
+              <div
+                className="aspect-[4/5] bg-cover bg-center rounded-sm"
+                style={{ backgroundImage: `url(${card2})` }}
+              />
+              <span className="absolute bottom-3 left-0 right-0 text-center font-display italic text-ink/80 text-sm">
+                Petits artistes
+              </span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            style={{ x: cardB, y: cardBY }}
+            initial={{ opacity: 0, scale: 0.85, rotate: 8 }}
+            animate={{ opacity: 1, scale: 1, rotate: 5 }}
+            transition={{ duration: 1.2, delay: 1, ease: [0.22, 1, 0.36, 1] }}
+            className="hidden xl:block absolute right-[28%] top-[18%] w-44 z-20"
+          >
+            <div className="bg-cream p-2.5 pb-8 rounded-sm shadow-glow rotate-[5deg] hover:rotate-0 transition-transform duration-700">
+              <div
+                className="aspect-square bg-cover bg-center rounded-sm"
+                style={{ backgroundImage: `url(${card3})` }}
+              />
+              <span className="absolute bottom-2 left-0 right-0 text-center font-display italic text-ink/80 text-xs">
+                Couleurs
+              </span>
+            </div>
+          </motion.div>
+
           {/* Massive serif headline */}
           <motion.div
             style={{ x: smx }}
-            className="col-span-12 lg:col-span-9 pointer-events-auto"
+            className="col-span-12 lg:col-span-9 relative z-10"
           >
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.2, delay: 0.4 }}
-              className="font-display font-bold text-ink leading-[0.88] tracking-[-0.03em]"
+              className="font-display font-bold text-white leading-[0.88] tracking-[-0.03em] drop-shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
             >
               <motion.span
                 initial={{ y: 80, opacity: 0 }}
@@ -337,22 +167,45 @@ export function Hero3D() {
                 transition={{ duration: 1, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 className="block italic font-light text-[clamp(3rem,11vw,11rem)] -mt-2 md:-mt-6 pl-[12vw]"
               >
-                <span className="text-shimmer">des pétales</span>
+                <span className="bg-gradient-to-r from-sun via-petal to-petal-soft bg-clip-text text-transparent">
+                  des pétales
+                </span>
               </motion.span>
             </motion.h1>
           </motion.div>
 
-          {/* Right column — manifesto */}
+          {/* Floating image card bottom-left (mobile + desktop) */}
+          <motion.div
+            initial={{ opacity: 0, x: -40, rotate: -6 }}
+            animate={{ opacity: 1, x: 0, rotate: -3 }}
+            transition={{ duration: 1, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            style={{ x: cardB, y: cardBY }}
+            className="hidden md:block absolute left-[2%] bottom-[2%] w-48 lg:w-56 z-10"
+          >
+            <div className="relative group overflow-hidden rounded-2xl shadow-glow border border-white/20">
+              <div
+                className="aspect-[4/5] bg-cover bg-center group-hover:scale-110 transition-transform duration-1000"
+                style={{ backgroundImage: `url(${card1})` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3 flex items-center gap-2 text-white text-[10px] uppercase tracking-[0.3em]">
+                <span className="w-1.5 h-1.5 rounded-full bg-petal animate-pulse" />
+                En direct · Jardin
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right manifesto card */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1 }}
-            style={{ x: useTransform(smx, (v) => -v * 0.5) }}
-            className="col-span-12 lg:col-span-3 pointer-events-auto"
+            transition={{ duration: 1, delay: 1.2 }}
+            style={{ x: useTransform(smx, (v) => -v * 0.3) }}
+            className="col-span-12 lg:col-span-4 lg:col-start-9 z-10 max-w-md ml-auto"
           >
-            <div className="backdrop-blur-xl bg-white/40 border border-white/60 rounded-2xl p-5 shadow-soft">
-              <p className="text-sm text-ink leading-relaxed">
-                <span className="text-petal font-display italic text-2xl leading-none">"</span>
+            <div className="backdrop-blur-xl bg-white/10 border border-white/25 rounded-2xl p-5 shadow-glow">
+              <p className="text-sm text-white/95 leading-relaxed">
+                <span className="text-sun font-display italic text-2xl leading-none mr-1">"</span>
                 Un sanctuaire d'enfance où chaque pétale éclôt à son propre rythme — entre rires, découvertes et tendresse.
               </p>
             </div>
@@ -363,43 +216,52 @@ export function Hero3D() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8 pointer-events-auto"
+          transition={{ duration: 1, delay: 1.3 }}
+          className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8"
         >
-          {/* CTA */}
           <div className="flex flex-wrap items-center gap-4">
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
-              onClick={() => document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" })}
-              className="group relative overflow-hidden px-7 py-4 rounded-full text-white font-medium text-sm bg-ink flex items-center gap-3 shadow-glow"
+              onClick={() =>
+                document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="group relative overflow-hidden px-7 py-4 rounded-full text-ink font-medium text-sm bg-cream flex items-center gap-3 shadow-glow"
             >
               <span className="relative z-10">Réserver une visite</span>
-              <span className="relative z-10 w-8 h-8 rounded-full bg-white text-ink flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
+              <span className="relative z-10 w-8 h-8 rounded-full bg-ink text-cream flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
                 <ArrowUpRight className="w-4 h-4" />
               </span>
               <span className="absolute inset-0 bg-gradient-petal translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             </motion.button>
             <button
-              onClick={() => document.querySelector("#notre-univers")?.scrollIntoView({ behavior: "smooth" })}
-              className="story-link text-sm font-medium text-ink/80"
+              onClick={() =>
+                document.querySelector("#notre-univers")?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="group flex items-center gap-3 text-sm font-medium text-white/90 hover:text-white transition-colors"
             >
+              <span className="w-11 h-11 rounded-full border border-white/30 flex items-center justify-center group-hover:bg-white group-hover:text-ink transition-all duration-500">
+                <Play className="w-4 h-4 fill-current ml-0.5" />
+              </span>
               Découvrir notre univers
             </button>
           </div>
 
-          {/* Stats */}
           <div className="flex items-center gap-8 md:gap-12">
             {stats.map((s, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.4 + i * 0.1 }}
+                transition={{ duration: 0.6, delay: 1.5 + i * 0.1 }}
                 className="flex flex-col"
               >
-                <span className="font-display text-3xl md:text-4xl text-ink font-bold leading-none">{s.v}</span>
-                <span className="text-[10px] uppercase tracking-[0.25em] text-ink/60 mt-1.5">{s.l}</span>
+                <span className="font-display text-3xl md:text-4xl text-white font-bold leading-none">
+                  {s.v}
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.25em] text-white/70 mt-1.5">
+                  {s.l}
+                </span>
               </motion.div>
             ))}
           </div>
@@ -407,14 +269,14 @@ export function Hero3D() {
       </motion.div>
 
       {/* Bottom marquee */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-ink/10 bg-cream/60 backdrop-blur-md overflow-hidden">
+      <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/15 bg-ink/40 backdrop-blur-md overflow-hidden">
         <motion.div
           animate={{ x: ["0%", "-50%"] }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="flex gap-10 py-3 whitespace-nowrap font-display italic text-ink/80"
+          className="flex gap-10 py-3 whitespace-nowrap font-display italic text-white/85"
         >
           {[...marquee, ...marquee, ...marquee].map((w, i) => (
-            <span key={i} className={`text-base md:text-lg ${w === "★" ? "text-petal" : ""}`}>
+            <span key={i} className={`text-base md:text-lg ${w === "★" ? "text-sun" : ""}`}>
               {w}
             </span>
           ))}

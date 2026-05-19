@@ -1,17 +1,28 @@
 import { motion, AnimatePresence, useInView } from "motion/react";
 import { useRef, useState } from "react";
 import { X } from "lucide-react";
+import p1 from "@/assets/photos/play1.jpeg";
+import p2 from "@/assets/photos/play2.jpeg";
+import p3 from "@/assets/photos/play3.jpeg";
+import p4 from "@/assets/photos/hero.jpeg";
+import p5 from "@/assets/photos/play5.jpeg";
+import p6 from "@/assets/photos/balles.jpeg";
+import p7 from "@/assets/photos/peinture.jpeg";
+import p8 from "@/assets/photos/tricycles.jpeg";
+import p9 from "@/assets/photos/motos.jpeg";
+import p10 from "@/assets/photos/quad.jpeg";
 
 const images = [
-  { url: "https://images.unsplash.com/photo-1600880291319-1a7499c191e8?w=1200&q=85", caption: "Moments de joie et de partage" },
-  { url: "https://images.unsplash.com/photo-1761208663763-c4d30657c910?w=1200&q=85", caption: "Jeux créatifs et colorés" },
-  { url: "https://images.unsplash.com/photo-1777056491418-d4ff81a4ad92?w=1200&q=85", caption: "Apprentissage en groupe" },
-  { url: "https://images.unsplash.com/photo-1770096679916-2cd9c720d400?w=1200&q=85", caption: "Activités artistiques" },
-  { url: "https://images.unsplash.com/photo-1560130958-0ea787c275de?w=1200&q=85", caption: "Créativité et imagination" },
-  { url: "https://images.unsplash.com/photo-1758598737955-7c8a9556706a?w=1200&q=85", caption: "Construction et découverte" },
-  { url: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=1200&q=85", caption: "Éveil et développement" },
-  { url: "https://images.unsplash.com/photo-1567746455504-cb3213f8f5b8?w=1200&q=85", caption: "Notre espace lumineux" },
-  { url: "https://images.unsplash.com/photo-1599689868384-59cb2b01bb21?w=1200&q=85", caption: "Lecture et histoires" },
+  { url: p4, caption: "Cour de jeux extérieure" },
+  { url: p1, caption: "Premiers tours de tricycle" },
+  { url: p3, caption: "Partager, c'est apprendre" },
+  { url: p7, caption: "Petits artistes en action" },
+  { url: p2, caption: "Coin lecture & éveil" },
+  { url: p6, caption: "Découverte sensorielle" },
+  { url: p8, caption: "Balades à deux roues" },
+  { url: p5, caption: "Curiosité à la porte" },
+  { url: p9, caption: "Circuit d'aventure" },
+  { url: p10, caption: "Petits pilotes" },
 ];
 
 export function Galerie() {
