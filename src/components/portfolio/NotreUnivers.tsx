@@ -1,6 +1,9 @@
 import { motion, useInView, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { Heart, Sparkles as SparkleIcon, Users, ArrowUpRight } from "lucide-react";
+import uPlay from "@/assets/photos/hero.jpeg";
+import uPaint from "@/assets/photos/peinture.jpeg";
+import uShare from "@/assets/photos/play3.jpeg";
 
 const features = [
   {
@@ -10,7 +13,7 @@ const features = [
     description: "Locaux modernes et colorés, conçus pour stimuler la curiosité et assurer le confort.",
     accent: "from-petal to-petal-soft",
     tag: "Architecture",
-    image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200&q=80",
+    image: uPlay,
   },
   {
     num: "II.",
@@ -19,7 +22,7 @@ const features = [
     description: "Jeux, apprentissage et créativité pour un développement harmonieux et joyeux.",
     accent: "from-sun to-petal-soft",
     tag: "Méthode",
-    image: "https://images.unsplash.com/photo-1597413545419-4013431dbfec?w=1200&q=80",
+    image: uPaint,
   },
   {
     num: "III.",
@@ -28,7 +31,7 @@ const features = [
     description: "Des éducateurs passionnés qui accompagnent chaque enfant avec bienveillance.",
     accent: "from-mint to-sky",
     tag: "Équipe",
-    image: "https://images.unsplash.com/photo-1587653263995-422546a7a569?w=1200&q=80",
+    image: uShare,
   },
 ];
 

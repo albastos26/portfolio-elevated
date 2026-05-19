@@ -1,16 +1,23 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import g1 from "@/assets/photos/hero.jpeg";
+import g2 from "@/assets/photos/peinture.jpeg";
+import g3 from "@/assets/photos/play3.jpeg";
+import g4 from "@/assets/photos/play2.jpeg";
+import g5 from "@/assets/photos/balles.jpeg";
+import g6 from "@/assets/photos/tricycles.jpeg";
+import g7 from "@/assets/photos/motos.jpeg";
 
 interface Pic { src: string; alt: string; }
 
 const DEFAULT_IMAGES: Pic[] = [
-  { src: "https://images.unsplash.com/photo-1567746455504-cb3213f8f5b8?w=1600&q=85", alt: "Classroom" },
-  { src: "https://images.unsplash.com/photo-1607211851821-8be3cd6146f0?w=1600&q=85", alt: "Painting" },
-  { src: "https://images.unsplash.com/photo-1600880291319-1a7499c191e8?w=1600&q=85", alt: "Joy" },
-  { src: "https://images.unsplash.com/photo-1599689868384-59cb2b01bb21?w=1600&q=85", alt: "Reading" },
-  { src: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=1600&q=85", alt: "Toys" },
-  { src: "https://images.unsplash.com/photo-1578349035260-9f3d4042f1f7?w=1600&q=85", alt: "Playing" },
-  { src: "https://images.unsplash.com/photo-1588072432836-e10032774350?w=1600&q=85", alt: "Learning" },
+  { src: g1, alt: "Cour" },
+  { src: g2, alt: "Peinture" },
+  { src: g3, alt: "Partage" },
+  { src: g4, alt: "Lecture" },
+  { src: g5, alt: "Balles" },
+  { src: g6, alt: "Tricycles" },
+  { src: g7, alt: "Motos" },
 ];
 
 const STYLES = [

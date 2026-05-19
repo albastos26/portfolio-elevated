@@ -1,14 +1,20 @@
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { Palette, Music, BookOpen, Puzzle, Rocket, Sun } from "lucide-react";
+import imgPeinture from "@/assets/photos/peinture.jpeg";
+import imgBalles from "@/assets/photos/balles.jpeg";
+import imgPlay2 from "@/assets/photos/play2.jpeg";
+import imgPlay3 from "@/assets/photos/play3.jpeg";
+import imgTricycles from "@/assets/photos/tricycles.jpeg";
+import imgHero from "@/assets/photos/hero.jpeg";
 
 const activites = [
-  { icon: Palette, title: "Arts & Créativité", description: "Peinture, dessin, modelage… libre cours à l'imagination.", image: "https://images.unsplash.com/photo-1607211851821-8be3cd6146f0?w=1200&q=80", color: "bg-petal" },
-  { icon: Music, title: "Éveil Musical", description: "Découverte des sons, rythmes et instruments.", image: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=1200&q=80", color: "bg-mint" },
-  { icon: BookOpen, title: "Histoires & Lecture", description: "Des moments de lecture pour développer le langage.", image: "https://images.unsplash.com/photo-1599689868384-59cb2b01bb21?w=1200&q=80", color: "bg-lavender" },
-  { icon: Puzzle, title: "Jeux Éducatifs", description: "Apprentissage ludique adapté à chaque âge.", image: "https://images.unsplash.com/photo-1588072432836-e10032774350?w=1200&q=80", color: "bg-sun" },
-  { icon: Rocket, title: "Activités Motrices", description: "Coordination et équilibre par le jeu.", image: "https://images.unsplash.com/photo-1578349035260-9f3d4042f1f7?w=1200&q=80", color: "bg-sky" },
-  { icon: Sun, title: "Découverte de la Nature", description: "Sensibilisation à l'environnement.", image: "https://images.unsplash.com/photo-1567746455504-cb3213f8f5b8?w=1200&q=80", color: "bg-petal-soft" },
+  { icon: Palette, title: "Arts & Créativité", description: "Peinture, dessin, modelage… libre cours à l'imagination.", image: imgPeinture, color: "bg-petal" },
+  { icon: Music, title: "Éveil Sensoriel", description: "Découverte des sons, couleurs et textures.", image: imgBalles, color: "bg-mint" },
+  { icon: BookOpen, title: "Histoires & Lecture", description: "Des moments de lecture pour développer le langage.", image: imgPlay2, color: "bg-lavender" },
+  { icon: Puzzle, title: "Jeux Éducatifs", description: "Apprentissage ludique adapté à chaque âge.", image: imgPlay3, color: "bg-sun" },
+  { icon: Rocket, title: "Activités Motrices", description: "Coordination et équilibre par le jeu.", image: imgTricycles, color: "bg-sky" },
+  { icon: Sun, title: "Jeux en Plein Air", description: "Cour aménagée, sécurisée et stimulante.", image: imgHero, color: "bg-petal-soft" },
 ];
 
 export function Activites() {
