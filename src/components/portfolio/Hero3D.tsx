@@ -1,120 +1,218 @@
 import { Suspense, useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Environment, MeshDistortMaterial, Sparkles, Trail, Icosahedron, Torus } from "@react-three/drei";
+import { Float, Environment, ContactShadows, Sparkles } from "@react-three/drei";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "motion/react";
 import { ArrowUpRight, Star } from "lucide-react";
 import * as THREE from "three";
 
-/* ---------- 3D Scene ---------- */
+/* ---------- 3D Scene: Realistic Teddy Bear ---------- */
 
-function MorphingCore({ mouse }: { mouse: { x: number; y: number } }) {
-  const ref = useRef<THREE.Mesh>(null);
+function TeddyBear({ mouse }: { mouse: { x: number; y: number } }) {
+  const group = useRef<THREE.Group>(null);
+  const head = useRef<THREE.Group>(null);
+  const leftArm = useRef<THREE.Mesh>(null);
+  const rightArm = useRef<THREE.Mesh>(null);
+
   useFrame((state) => {
-    if (!ref.current) return;
     const t = state.clock.elapsedTime;
-    ref.current.rotation.x = THREE.MathUtils.lerp(ref.current.rotation.x, mouse.y * 0.4 + t * 0.1, 0.05);
-    ref.current.rotation.y = THREE.MathUtils.lerp(ref.current.rotation.y, mouse.x * 0.6 + t * 0.15, 0.05);
-  });
-  return (
-    <Icosahedron ref={ref} args={[1.6, 4]} position={[0, 0, 0]}>
-      <MeshDistortMaterial
-        color="#FF8A80"
-        distort={0.55}
-        speed={1.4}
-        roughness={0.05}
-        metalness={0.4}
-        clearcoat={1}
-        clearcoatRoughness={0}
-        emissive="#FFB4A2"
-        emissiveIntensity={0.15}
-      />
-    </Icosahedron>
-  );
-}
-
-function OrbitingPetal({ radius, speed, size, color, offset }: { radius: number; speed: number; size: number; color: string; offset: number }) {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    const t = state.clock.elapsedTime * speed + offset;
-    ref.current.position.x = Math.cos(t) * radius;
-    ref.current.position.z = Math.sin(t) * radius;
-    ref.current.position.y = Math.sin(t * 1.6) * 0.6;
-    ref.current.rotation.x = t;
-    ref.current.rotation.y = t * 0.7;
-  });
-  return (
-    <Trail width={1.5} length={5} color={color} attenuation={(w) => w * w}>
-      <mesh ref={ref}>
-        <torusKnotGeometry args={[size, size * 0.3, 48, 8]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.6} roughness={0.2} metalness={0.6} />
-      </mesh>
-    </Trail>
-  );
-}
-
-function ParticleField() {
-  const points = useMemo(() => {
-    const arr = new Float32Array(800 * 3);
-    for (let i = 0; i < 800; i++) {
-      const r = 4 + Math.random() * 3;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      arr[i * 3 + 2] = r * Math.cos(phi);
+    if (group.current) {
+      group.current.rotation.y = THREE.MathUtils.lerp(
+        group.current.rotation.y,
+        mouse.x * 0.6,
+        0.05
+      );
+      group.current.rotation.x = THREE.MathUtils.lerp(
+        group.current.rotation.x,
+        mouse.y * 0.25,
+        0.05
+      );
     }
-    return arr;
-  }, []);
-  const ref = useRef<THREE.Points>(null);
-  useFrame((state) => {
-    if (ref.current) ref.current.rotation.y = state.clock.elapsedTime * 0.04;
+    if (head.current) {
+      head.current.rotation.z = Math.sin(t * 0.8) * 0.08;
+      head.current.rotation.y = Math.sin(t * 0.5) * 0.15;
+    }
+    // Waving arm
+    if (leftArm.current) {
+      leftArm.current.rotation.z = 0.4 + Math.sin(t * 3) * 0.6;
+    }
+    if (rightArm.current) {
+      rightArm.current.rotation.z = -0.5 + Math.sin(t * 1.2) * 0.1;
+    }
   });
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[points, 3]} />
-      </bufferGeometry>
-      <pointsMaterial size={0.02} color="#FFE66D" transparent opacity={0.7} sizeAttenuation />
-    </points>
-  );
-}
 
-function Ring() {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((s) => {
-    if (!ref.current) return;
-    ref.current.rotation.z = s.clock.elapsedTime * 0.15;
-    ref.current.rotation.x = Math.PI / 2.3;
-  });
+  // Fur-like material
+  const fur = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#c8956d",
+        roughness: 0.95,
+        sheen: 1,
+        sheenColor: new THREE.Color("#f3d6b0"),
+        sheenRoughness: 0.4,
+        clearcoat: 0.1,
+      }),
+    []
+  );
+  const darkFur = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#8b5e3c",
+        roughness: 0.9,
+        sheen: 0.8,
+        sheenColor: new THREE.Color("#d4a574"),
+      }),
+    []
+  );
+  const snoutMat = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#f0dcc0",
+        roughness: 0.85,
+        sheen: 0.6,
+      }),
+    []
+  );
+  const eyeMat = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#1a1208",
+        roughness: 0.15,
+        clearcoat: 1,
+        clearcoatRoughness: 0.05,
+        metalness: 0.2,
+      }),
+    []
+  );
+  const noseMat = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#1a1208",
+        roughness: 0.25,
+        clearcoat: 0.8,
+      }),
+    []
+  );
+  const bowMat = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: "#FF8A80",
+        roughness: 0.4,
+        sheen: 1,
+        sheenColor: new THREE.Color("#FFE66D"),
+        clearcoat: 0.5,
+      }),
+    []
+  );
+
   return (
-    <Torus ref={ref} args={[2.6, 0.012, 16, 200]}>
-      <meshStandardMaterial color="#FFE66D" emissive="#FFE66D" emissiveIntensity={1.2} />
-    </Torus>
+    <group ref={group} position={[0, -0.6, 0]} scale={1.15}>
+      {/* Body */}
+      <mesh material={fur} position={[0, 0, 0]} castShadow>
+        <sphereGeometry args={[1, 64, 64]} />
+      </mesh>
+      {/* Belly patch */}
+      <mesh material={snoutMat} position={[0, -0.1, 0.78]} scale={[0.7, 0.85, 0.4]}>
+        <sphereGeometry args={[0.55, 48, 48]} />
+      </mesh>
+
+      {/* Head group */}
+      <group ref={head} position={[0, 1.25, 0.1]}>
+        <mesh material={fur} castShadow>
+          <sphereGeometry args={[0.78, 64, 64]} />
+        </mesh>
+        {/* Ears */}
+        <mesh material={fur} position={[-0.6, 0.55, 0]}>
+          <sphereGeometry args={[0.25, 32, 32]} />
+        </mesh>
+        <mesh material={darkFur} position={[-0.6, 0.55, 0.08]} scale={[0.7, 0.7, 0.3]}>
+          <sphereGeometry args={[0.25, 32, 32]} />
+        </mesh>
+        <mesh material={fur} position={[0.6, 0.55, 0]}>
+          <sphereGeometry args={[0.25, 32, 32]} />
+        </mesh>
+        <mesh material={darkFur} position={[0.6, 0.55, 0.08]} scale={[0.7, 0.7, 0.3]}>
+          <sphereGeometry args={[0.25, 32, 32]} />
+        </mesh>
+        {/* Snout */}
+        <mesh material={snoutMat} position={[0, -0.15, 0.6]} scale={[1, 0.8, 0.7]}>
+          <sphereGeometry args={[0.32, 48, 48]} />
+        </mesh>
+        {/* Nose */}
+        <mesh material={noseMat} position={[0, 0.02, 0.85]}>
+          <sphereGeometry args={[0.08, 32, 32]} />
+        </mesh>
+        {/* Eyes */}
+        <mesh material={eyeMat} position={[-0.26, 0.18, 0.66]}>
+          <sphereGeometry args={[0.07, 32, 32]} />
+        </mesh>
+        <mesh material={eyeMat} position={[0.26, 0.18, 0.66]}>
+          <sphereGeometry args={[0.07, 32, 32]} />
+        </mesh>
+        {/* Eye highlights */}
+        <mesh position={[-0.24, 0.21, 0.72]}>
+          <sphereGeometry args={[0.018, 16, 16]} />
+          <meshBasicMaterial color="#ffffff" />
+        </mesh>
+        <mesh position={[0.28, 0.21, 0.72]}>
+          <sphereGeometry args={[0.018, 16, 16]} />
+          <meshBasicMaterial color="#ffffff" />
+        </mesh>
+      </group>
+
+      {/* Arms */}
+      <mesh ref={leftArm} material={fur} position={[-0.95, 0.35, 0.15]}>
+        <capsuleGeometry args={[0.28, 0.5, 16, 32]} />
+      </mesh>
+      <mesh ref={rightArm} material={fur} position={[0.95, 0.35, 0.15]}>
+        <capsuleGeometry args={[0.28, 0.5, 16, 32]} />
+      </mesh>
+
+      {/* Legs */}
+      <mesh material={fur} position={[-0.55, -1.05, 0.1]} rotation={[0.2, 0, -0.1]}>
+        <capsuleGeometry args={[0.32, 0.5, 16, 32]} />
+      </mesh>
+      <mesh material={fur} position={[0.55, -1.05, 0.1]} rotation={[0.2, 0, 0.1]}>
+        <capsuleGeometry args={[0.32, 0.5, 16, 32]} />
+      </mesh>
+      {/* Foot pads */}
+      <mesh material={snoutMat} position={[-0.55, -1.35, 0.32]} scale={[0.8, 0.4, 0.6]}>
+        <sphereGeometry args={[0.25, 32, 32]} />
+      </mesh>
+      <mesh material={snoutMat} position={[0.55, -1.35, 0.32]} scale={[0.8, 0.4, 0.6]}>
+        <sphereGeometry args={[0.25, 32, 32]} />
+      </mesh>
+
+      {/* Bow tie */}
+      <group position={[0, 0.62, 0.78]} rotation={[0, 0, 0]}>
+        <mesh material={bowMat} position={[-0.18, 0, 0]} rotation={[0, 0, 0.4]}>
+          <coneGeometry args={[0.14, 0.3, 4]} />
+        </mesh>
+        <mesh material={bowMat} position={[0.18, 0, 0]} rotation={[0, 0, -0.4]}>
+          <coneGeometry args={[0.14, 0.3, 4]} />
+        </mesh>
+        <mesh material={bowMat}>
+          <sphereGeometry args={[0.07, 16, 16]} />
+        </mesh>
+      </group>
+    </group>
   );
 }
 
 function Scene({ mouse }: { mouse: { x: number; y: number } }) {
   return (
     <>
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={1} color="#FFE66D" />
-      <pointLight position={[-5, 3, 3]} intensity={2} color="#FF8A80" />
-      <pointLight position={[5, -3, 2]} intensity={1.5} color="#A8D5BA" />
-      <pointLight position={[0, 0, 5]} intensity={0.8} color="#E8D5F2" />
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[5, 6, 5]} intensity={1.4} color="#FFE4B5" castShadow />
+      <pointLight position={[-5, 3, 3]} intensity={1.6} color="#FF8A80" />
+      <pointLight position={[5, -2, 2]} intensity={1} color="#A8D5BA" />
+      <pointLight position={[0, 2, 5]} intensity={0.7} color="#FFE66D" />
 
-      <Float speed={1.5} rotationIntensity={0.4} floatIntensity={0.8}>
-        <MorphingCore mouse={mouse} />
+      <Float speed={1.6} rotationIntensity={0.15} floatIntensity={0.5}>
+        <TeddyBear mouse={mouse} />
       </Float>
 
-      <Ring />
-      <OrbitingPetal radius={2.8} speed={0.4} size={0.18} color="#FF8A80" offset={0} />
-      <OrbitingPetal radius={3.2} speed={0.3} size={0.14} color="#A8D5BA" offset={2.1} />
-      <OrbitingPetal radius={2.4} speed={0.55} size={0.12} color="#E8D5F2" offset={4.2} />
-      <OrbitingPetal radius={3.6} speed={0.25} size={0.16} color="#FFE66D" offset={1.2} />
-
-      <ParticleField />
-      <Sparkles count={150} scale={12} size={2} speed={0.4} color="#FFB4A2" />
+      <ContactShadows position={[0, -2.3, 0]} opacity={0.35} scale={8} blur={2.6} far={4} />
+      <Sparkles count={80} scale={10} size={2} speed={0.3} color="#FFB4A2" />
       <Environment preset="sunset" />
     </>
   );
